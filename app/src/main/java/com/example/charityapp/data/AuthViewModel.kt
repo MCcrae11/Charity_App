@@ -10,6 +10,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.example.charityapp.models.UserModel
 
 class AuthViewModel: ViewModel() {
+    val currentUserId: String
+        get() = auth.currentUser?.uid ?: ""
     private val auth: FirebaseAuth= FirebaseAuth.getInstance()
 
     fun signup(username: String,

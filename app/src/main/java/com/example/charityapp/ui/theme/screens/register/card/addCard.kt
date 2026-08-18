@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.example.charityapp.data.VolunteerCardInput
 import com.example.charityapp.data.VolunteerEventCard
 import java.time.LocalDateTime
@@ -137,20 +136,23 @@ fun AddCardScreen(
             (hour.toIntOrNull() ?: 0).coerceIn(0, 23),
             0
         )
-        VolunteerEventCard(
-            title = title.ifBlank { "Untitled event" },
-            description = description.ifBlank { "Add a description for your event." },
-            location = location.ifBlank { "Location TBD" },
-            eventDate = previewDate,
-            goal = goalText.toIntOrNull() ?: 0,
-            raised = 0
+        VolunteerEventCardItem(
+            card = VolunteerEventCard(
+                title = title.ifBlank { "Untitled event" },
+                description = description.ifBlank { "Add a description for your event." },
+                location = location.ifBlank { "Location TBD" },
+                eventDateEpochSeconds = previewDate.atZone(java.time.ZoneId.systemDefault()).toEpochSecond(),
+                goal = goalText.toIntOrNull() ?: 0,
+                raised = 0
+            ),
+            onVolunteerClick = {},
+            onDonateClick = {}
         )
     }
 }
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AddCardScreenPreview() {
-    val mockNavController = rememberNavController()
     AddCardScreen(
         onSave = {}
     )
