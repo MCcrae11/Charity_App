@@ -31,7 +31,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.charityapp.data.AuthViewModel
 import com.example.charityapp.data.CardViewModel
+import com.example.charityapp.ui.theme.screens.register.SplashScreen
+import com.example.charityapp.ui.theme.screens.register.account.AccountScreen
 import com.example.charityapp.ui.theme.screens.register.card.AddCardScreen
+import com.example.charityapp.ui.theme.screens.register.card.UpdateCardScreen
 import com.example.charityapp.ui.theme.screens.register.dashboard.DashboardScreen
 import com.example.charityapp.ui.theme.screens.register.register.RegisterScreen
 
@@ -39,7 +42,7 @@ import com.example.charityapp.ui.theme.screens.register.register.RegisterScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = ROUTE_REGISTER
+    startDestination: String = ROUTE_SPLASH
 ) {
     val authViewModel: AuthViewModel = viewModel()
     val cardViewModel: CardViewModel = viewModel()
@@ -47,7 +50,7 @@ fun AppNavHost(
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
-    val showBars = currentRoute != ROUTE_REGISTER
+    val showBars = currentRoute != ROUTE_REGISTER && currentRoute != ROUTE_SPLASH
 
     Scaffold(
         topBar = {
@@ -92,7 +95,10 @@ fun AppNavHost(
                     )
                     NavigationBarItem(
                         selected = selectedItem.intValue == 0,
-                        onClick = { selectedItem.intValue = 0 },
+                        onClick = {
+                            selectedItem.intValue = 0
+                            navController.navigate(ROUTE_ACCOUNT)
+                        },
                         icon = { Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Account") },
                         label = { Text(text = "Account") }
                     )
@@ -106,7 +112,13 @@ fun AppNavHost(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(ROUTE_REGISTER) { RegisterScreen(navController) }
+            composable (ROUTE_SPLASH) { SplashScreen(navController) }
             composable(ROUTE_DASHBOARD) { DashboardScreen(navController) }
+            composable(ROUTE_ACCOUNT) { AccountScreen(navController, authViewModel, cardViewModel) }
+            composable("$ROUTE_UPDATECARD/{cardId}") { backStackEntry ->
+                val cardId = backStackEntry.arguments?.getString("cardId") ?: ""
+                UpdateCardScreen(navController, cardId, cardViewModel)
+            }
             composable(ROUTE_ADDCARD) {
                 val context = LocalContext.current
                 AddCardScreen(

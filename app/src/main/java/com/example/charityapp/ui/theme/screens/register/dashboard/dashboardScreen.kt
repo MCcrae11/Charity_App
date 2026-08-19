@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.charityapp.data.AuthViewModel
 import com.example.charityapp.data.CardViewModel
 import com.example.charityapp.data.VolunteerEventCard
+import com.example.charityapp.navigation.ROUTE_UPDATECARD
 import com.example.charityapp.ui.theme.screens.register.card.DonationPromptDialog
 import com.example.charityapp.ui.theme.screens.register.card.VolunteerEventCardItem
 import com.example.charityapp.ui.theme.screens.register.card.VolunteerRegistrationDialog
@@ -48,6 +49,9 @@ fun DashboardScreen(
                 onDonateClick = {
                     selectedCard = card
                     showDonationDialog = true
+                },
+                onEditClick = {
+                    navController.navigate("$ROUTE_UPDATECARD/${card.id}")
                 }
             )
         }

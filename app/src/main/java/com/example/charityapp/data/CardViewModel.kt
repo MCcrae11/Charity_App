@@ -48,6 +48,7 @@ data class VolunteerCardInput(
 )
 
 data class VolunteerRegistration(
+    val id: String = "",
     val eventId: String = "",
     val userId: String = "",
     val fullName: String = "",
@@ -66,6 +67,9 @@ data class DonationPrompt(
 class CardViewModel : ViewModel() {
     private val _cards = mutableStateOf<List<VolunteerEventCard>>(emptyList())
     val cards: State<List<VolunteerEventCard>> = _cards
+
+    private val _userVolunteeredRegistrations = mutableStateOf<List<VolunteerRegistration>>(emptyList())
+    private val _userDonatedPrompts = mutableStateOf<List<DonationPrompt>>(emptyList())
 
     private val mpesaApi: MpesaApi by lazy {
         val logging = HttpLoggingInterceptor().apply {
@@ -102,6 +106,56 @@ class CardViewModel : ViewModel() {
         })
     }
 
+    fun fetchUserActivities(userId: String) {
+        val volunteerRef = FirebaseDatabase.getInstance().getReference("EventVolunteers")
+        volunteerRef.orderByChild("userId").equalTo(userId).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val registrations = mutableListOf<VolunteerRegistration>()
+                for (child in snapshot.children) {
+                    val reg = child.getValue(VolunteerRegistration::class.java)
+                    reg?.let { registrations.add(it.copy(id = child.key ?: "")) }
+                }
+                _userVolunteeredRegistrations.value = registrations
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        val donationRef = FirebaseDatabase.getInstance().getReference("DonationPrompts")
+        donationRef.orderByChild("userId").equalTo(userId).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val prompts = mutableListOf<DonationPrompt>()
+                for (child in snapshot.children) {
+                    val prompt = child.getValue(DonationPrompt::class.java)
+                    prompt?.let { prompts.add(it) }
+                }
+                _userDonatedPrompts.value = prompts
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    fun getUserVolunteeredEvents(): List<Pair<VolunteerEventCard, VolunteerRegistration>> {
+        val result = mutableListOf<Pair<VolunteerEventCard, VolunteerRegistration>>()
+        for (reg in _userVolunteeredRegistrations.value) {
+            val card = cards.value.find { it.id == reg.eventId }
+            card?.let { result.add(it to reg) }
+        }
+        return result
+    }
+
+    fun getUserDonatedEvents(): List<Pair<VolunteerEventCard, DonationPrompt>> {
+        val result = mutableListOf<Pair<VolunteerEventCard, DonationPrompt>>()
+        for (prompt in _userDonatedPrompts.value) {
+            val card = cards.value.find { it.id == prompt.eventId }
+            card?.let { result.add(it to prompt) }
+        }
+        return result
+    }
+
+    fun getCardById(cardId: String): VolunteerEventCard? {
+        return cards.value.find { it.id == cardId }
+    }
+
     fun saveCard(
         card: VolunteerCardInput,
         userId: String,
@@ -128,6 +182,48 @@ class CardViewModel : ViewModel() {
                 onSuccess()
             } else {
                 Toast.makeText(context, "Failed to save card: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun updateCard(
+        cardId: String,
+        updatedData: VolunteerCardInput,
+        context: Context,
+        onSuccess: () -> Unit
+    ) {
+        val dbRef = FirebaseDatabase.getInstance().getReference("Cards").child(cardId)
+        
+        val updates = mapOf(
+            "title" to updatedData.title,
+            "description" to updatedData.description,
+            "location" to updatedData.location,
+            "eventDateEpochSeconds" to updatedData.eventDate.atZone(ZoneId.systemDefault()).toEpochSecond(),
+            "goal" to updatedData.goal
+        )
+
+        dbRef.updateChildren(updates).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Card updated successfully", Toast.LENGTH_SHORT).show()
+                onSuccess()
+            } else {
+                Toast.makeText(context, "Failed to update card: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun deleteVolunteerRegistration(
+        registrationId: String,
+        context: Context,
+        onSuccess: () -> Unit
+    ) {
+        val dbRef = FirebaseDatabase.getInstance().getReference("EventVolunteers").child(registrationId)
+        dbRef.removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Registration cancelled.", Toast.LENGTH_SHORT).show()
+                onSuccess()
+            } else {
+                Toast.makeText(context, "Failed to cancel registration: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -1,9 +1,13 @@
 package com.example.charityapp.ui.theme.screens.register.card
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -24,6 +28,7 @@ fun VolunteerEventCardItem(
     card: VolunteerEventCard,
     onVolunteerClick: (VolunteerEventCard) -> Unit,
     onDonateClick: (VolunteerEventCard) -> Unit,
+    onEditClick: (VolunteerEventCard) -> Unit = {},
 ) {
     val isActive = card.eventDateEpochSeconds > Instant.now().epochSecond
 
@@ -43,8 +48,13 @@ fun VolunteerEventCardItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = card.title ?: "Untitled", style = MaterialTheme.typography.titleMedium, color = textColor)
-                if (!isActive) {
-                    Text(text = "Ended", style = MaterialTheme.typography.labelSmall, color = Color.Red)
+                Row {
+                    IconButton(onClick = { onEditClick(card) }) {
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Card", tint = textColor)
+                    }
+                    if (!isActive) {
+                        Text(text = "Ended", style = MaterialTheme.typography.labelSmall, color = Color.Red)
+                    }
                 }
             }
             Spacer(Modifier.height(4.dp))
