@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.charityapp.data.AuthViewModel
 import com.example.charityapp.data.CardViewModel
+import com.example.charityapp.navigation.ROUTE_LOGIN
 import com.example.charityapp.navigation.ROUTE_REGISTER
 
 @Composable
@@ -132,7 +133,7 @@ fun AccountScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                navController.navigate(ROUTE_REGISTER) {
+                navController.navigate(ROUTE_LOGIN) {
                     popUpTo(0)
                 }
             },

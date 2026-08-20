@@ -36,6 +36,7 @@ import com.example.charityapp.ui.theme.screens.register.account.AccountScreen
 import com.example.charityapp.ui.theme.screens.register.card.AddCardScreen
 import com.example.charityapp.ui.theme.screens.register.card.UpdateCardScreen
 import com.example.charityapp.ui.theme.screens.register.dashboard.DashboardScreen
+import com.example.charityapp.ui.theme.screens.register.login.LoginScreen
 import com.example.charityapp.ui.theme.screens.register.register.RegisterScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +51,7 @@ fun AppNavHost(
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
-    val showBars = currentRoute != ROUTE_REGISTER && currentRoute != ROUTE_SPLASH
+    val showBars = currentRoute != ROUTE_REGISTER && currentRoute != ROUTE_SPLASH && currentRoute != ROUTE_LOGIN
 
     Scaffold(
         topBar = {
@@ -112,6 +113,7 @@ fun AppNavHost(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(ROUTE_REGISTER) { RegisterScreen(navController) }
+            composable(ROUTE_LOGIN) { LoginScreen(navController) }
             composable (ROUTE_SPLASH) { SplashScreen(navController) }
             composable(ROUTE_DASHBOARD) { DashboardScreen(navController) }
             composable(ROUTE_ACCOUNT) { AccountScreen(navController, authViewModel, cardViewModel) }

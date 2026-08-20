@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.charityapp.R
@@ -33,11 +35,14 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.charityapp.data.AuthViewModel
+import com.example.charityapp.navigation.ROUTE_LOGIN
+import com.example.charityapp.navigation.ROUTE_REGISTER
 
 
 @Composable
@@ -99,7 +104,9 @@ fun RegisterScreen(navController: NavController){
                 value = password,
                 label = { Text(text = "Enter password") },
                 onValueChange = { password = it },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) }
+                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
         }
         item {
@@ -110,7 +117,9 @@ fun RegisterScreen(navController: NavController){
                 value = confirmpassword,
                 label = { Text(text = "Confirm password") },
                 onValueChange = { confirmpassword = it },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) }
+                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
         }
         item {
@@ -129,9 +138,20 @@ fun RegisterScreen(navController: NavController){
             ) { Text(text = "Sign Up")}
         }
         item {
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+        item {
             Row() {
                 Text(text = "Already Signed Up?")
-                Text(text = "Login here")
+                Button(
+                    onClick = {
+                        navController.navigate(ROUTE_LOGIN) {
+                            popUpTo(0)
+                        }
+                    }, modifier = Modifier.size(150.dp)
+                ) {
+                    Text(text = "Login here")
+                }
             }
         }
     }
