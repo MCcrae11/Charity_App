@@ -42,12 +42,11 @@ fun VolunteerEventCardItem(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            // Ocean Teal Header Strip
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
-                    .background(color = Color(0xFF008080)) // Ocean Teal
+                    .background(color = Color(0xFF008080))
             )
 
             Column(modifier = Modifier.padding(16.dp)) {
@@ -85,7 +84,6 @@ fun VolunteerEventCardItem(
                         }
                     }
                 }
-
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = card.description ?: "",
@@ -94,10 +92,7 @@ fun VolunteerEventCardItem(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-
                 Spacer(Modifier.height(12.dp))
-
-                // Location info with Icon
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
@@ -112,10 +107,7 @@ fun VolunteerEventCardItem(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-
                 Spacer(Modifier.height(4.dp))
-
-                // Date info with Icon
                 if (card.eventDateEpochSeconds > 0) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -135,18 +127,7 @@ fun VolunteerEventCardItem(
                         )
                     }
                 }
-
                 Spacer(Modifier.height(12.dp))
-
-                Text(
-                    text = "Goal: KES ${card.raised} / ${card.goal} raised",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(Modifier.height(16.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)

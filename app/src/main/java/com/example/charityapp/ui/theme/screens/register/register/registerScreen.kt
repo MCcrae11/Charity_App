@@ -3,13 +3,15 @@ package com.example.charityapp.ui.theme.screens.register.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -42,7 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.charityapp.data.AuthViewModel
 import com.example.charityapp.navigation.ROUTE_LOGIN
-import com.example.charityapp.navigation.ROUTE_REGISTER
+
 
 
 @Composable
@@ -54,104 +56,76 @@ fun RegisterScreen(navController: NavController){
     val authViewModel: AuthViewModel= viewModel()
     val context= LocalContext.current
 
-    LazyColumn(modifier = Modifier.fillMaxSize(),
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-        item {
-            Image(
-                painter = painterResource(id = R.drawable.charity),
-                contentDescription = "logo",
-                modifier = Modifier
-                    .size(250.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            )
-        }
-        item {
-            Text(
-                text = "Sign Up",
-                fontSize = 20.sp,
-                fontStyle = Italic,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(15.dp))
-        }
-        item {
-            OutlinedTextField(
-                value = username,
-                label = { Text(text = "Enter Name or Username") },
-                onValueChange = { username = it },
-                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(15.dp))
-        }
-        item {
-            OutlinedTextField(
-                value = email,
-                label = { Text(text = "Enter email") },
-                onValueChange = { email = it },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) }
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(15.dp))
-        }
-        item {
-            OutlinedTextField(
-                value = password,
-                label = { Text(text = "Enter password") },
-                onValueChange = { password = it },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(15.dp))
-        }
-        item {
-            OutlinedTextField(
-                value = confirmpassword,
-                label = { Text(text = "Confirm password") },
-                onValueChange = { confirmpassword = it },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(15.dp))
-        }
-        item {
+        Image(
+            painter = painterResource(id = R.drawable.charity),
+            contentDescription = "logo",
+            modifier = Modifier
+                .size(250.dp)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Text(
+            text = "Sign Up",
+            fontSize = 20.sp,
+            fontStyle = Italic,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        OutlinedTextField(
+            value = username,
+            label = { Text(text = "Enter Name or Username") },
+            onValueChange = { username = it },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        OutlinedTextField(
+            value = email,
+            label = { Text(text = "Enter email") },
+            onValueChange = { email = it },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) }
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        OutlinedTextField(
+            value = password,
+            label = { Text(text = "Enter password") },
+            onValueChange = { password = it },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        OutlinedTextField(
+            value = confirmpassword,
+            label = { Text(text = "Confirm password") },
+            onValueChange = { confirmpassword = it },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        Button(
+            onClick = {authViewModel.signup(
+                username = username,
+                email = email,
+                password = password,
+                confirmpassword = confirmpassword,
+                navController = navController,
+                context = context
+            )}
+        ) { Text(text = "Sign Up")}
+        Spacer(modifier = Modifier.height(15.dp))
+        Row() {
+            Text(text = "Already Signed Up?")
             Button(
-                onClick = {authViewModel.signup(
-                    username = username,
-                    email = email,
-                    password = password,
-                    confirmpassword = confirmpassword,
-                    navController = navController,
-                    context = context
-                )}
-            ) { Text(text = "Sign Up")}
-        }
-        item {
-            Spacer(modifier = Modifier.height(15.dp))
-        }
-        item {
-            Row() {
-                Text(text = "Already Signed Up?")
-                Button(
-                    onClick = {
-                        navController.navigate(ROUTE_LOGIN) {
-                            popUpTo(0)
-                        }
-                    }, modifier = Modifier.size(150.dp)
-                ) {
-                    Text(text = "Login here")
-                }
+                onClick = {
+                    navController.navigate(ROUTE_LOGIN) {
+                        popUpTo(0)
+                    }
+                }, modifier = Modifier.size(150.dp)
+            ) {
+                Text(text = "Login here")
             }
         }
     }
