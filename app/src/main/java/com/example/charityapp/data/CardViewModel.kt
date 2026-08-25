@@ -317,7 +317,7 @@ class CardViewModel : ViewModel() {
                         partyA = formattedPhone,
                         partyB = shortCode,
                         phoneNumber = formattedPhone,
-                        callBackURL = "https://mydomain.com/path", // Replace with your actual callback
+                        callBackURL = "https://mydomain.com/path",
                         accountReference = "CharityDonation",
                         transactionDesc = "Donation for event"
                     )
