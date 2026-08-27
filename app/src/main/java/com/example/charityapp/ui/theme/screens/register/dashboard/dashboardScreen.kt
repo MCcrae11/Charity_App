@@ -21,12 +21,11 @@ import com.example.charityapp.ui.theme.screens.register.card.VolunteerRegistrati
 import java.time.Instant
 
 @Composable
-fun DashboardScreen(
-    navController: NavController,
-    cardViewModel: CardViewModel = viewModel(),
-    authViewModel: AuthViewModel = viewModel(),
-) {
+fun DashboardScreen(navController: NavController) {
+    val  authViewModel: AuthViewModel = viewModel()
+    val cardViewModel: CardViewModel = viewModel()
     val context = LocalContext.current
+
     var showVolunteerDialog by remember { mutableStateOf(false) }
     var showDonationDialog by remember { mutableStateOf(false) }
     var selectedCard by remember { mutableStateOf<VolunteerEventCard?>(null) }

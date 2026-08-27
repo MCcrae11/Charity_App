@@ -13,20 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.charityapp.data.AuthViewModel
 import com.example.charityapp.data.CardViewModel
 import com.example.charityapp.navigation.ROUTE_LOGIN
-import com.example.charityapp.navigation.ROUTE_REGISTER
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.charityapp.ui.theme.screens.register.card.AddCardScreen
 
 @Composable
-fun AccountScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel,
-    cardViewModel: CardViewModel
-) {
+fun AccountScreen(navController: NavController) {
+    val authViewModel: AuthViewModel = viewModel()
+    val cardViewModel: CardViewModel = viewModel()
     val context = LocalContext.current
     val userId = authViewModel.currentUserId
     val volunteeredEvents = cardViewModel.getUserVolunteeredEvents()
@@ -143,4 +144,9 @@ fun AccountScreen(
             Text(text = "Logout", color = Color.White)
         }
     }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun AccountScreenPreview() {
+    AccountScreen(navController = rememberNavController())
 }

@@ -8,8 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.charityapp.data.CardViewModel
 import com.example.charityapp.data.VolunteerCardInput
 import com.example.charityapp.navigation.ROUTE_DASHBOARD
@@ -18,11 +21,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 @Composable
-fun UpdateCardScreen(
-    navController: NavController,
-    cardId: String,
-    cardViewModel: CardViewModel
-) {
+fun UpdateCardScreen(navController: NavController, cardId: String) {
+    val cardViewModel: CardViewModel = viewModel()
     val context = LocalContext.current
     val existingCard = remember { cardViewModel.getCardById(cardId) }
 
@@ -132,4 +132,9 @@ fun UpdateCardScreen(
             Text("Save Changes")
         }
     }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun UpdateCardScreenPreview(){
+    UpdateCardScreen(navController = rememberNavController(), cardId = "cardId")
 }

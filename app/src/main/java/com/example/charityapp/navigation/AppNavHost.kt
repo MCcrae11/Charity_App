@@ -19,18 +19,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.charityapp.data.AuthViewModel
-import com.example.charityapp.data.CardViewModel
 import com.example.charityapp.ui.theme.screens.register.SplashScreen
 import com.example.charityapp.ui.theme.screens.register.account.AccountScreen
 import com.example.charityapp.ui.theme.screens.register.card.AddCardScreen
@@ -45,8 +41,6 @@ fun AppNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: String = ROUTE_SPLASH
 ) {
-    val authViewModel: AuthViewModel = viewModel()
-    val cardViewModel: CardViewModel = viewModel()
     val selectedItem = remember { mutableIntStateOf(0) }
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -116,24 +110,12 @@ fun AppNavHost(
             composable(ROUTE_LOGIN) { LoginScreen(navController) }
             composable (ROUTE_SPLASH) { SplashScreen(navController) }
             composable(ROUTE_DASHBOARD) { DashboardScreen(navController) }
-            composable(ROUTE_ACCOUNT) { AccountScreen(navController, authViewModel, cardViewModel) }
+            composable(ROUTE_ACCOUNT) { AccountScreen(navController) }
             composable("$ROUTE_UPDATECARD/{cardId}") { backStackEntry ->
                 val cardId = backStackEntry.arguments?.getString("cardId") ?: ""
-                UpdateCardScreen(navController, cardId, cardViewModel)
+                UpdateCardScreen(navController, cardId)
             }
-            composable(ROUTE_ADDCARD) {
-                val context = LocalContext.current
-                AddCardScreen(
-                    onSave = { card ->
-                        cardViewModel.saveCard(
-                            card = card,
-                            userId = authViewModel.currentUserId,
-                            context = context,
-                            onSuccess = { navController.popBackStack(ROUTE_DASHBOARD, inclusive = false) }
-                        )
-                    }
-                )
-            }
+            composable(ROUTE_ADDCARD) { AddCardScreen(navController) }
         }
     }
 }

@@ -8,17 +8,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.charityapp.data.AuthViewModel
+import com.example.charityapp.data.CardViewModel
 import com.example.charityapp.data.VolunteerCardInput
 import com.example.charityapp.data.VolunteerEventCard
+import com.example.charityapp.navigation.ROUTE_DASHBOARD
 import java.time.LocalDateTime
-
+import java.time.ZoneId
 
 @Composable
-fun AddCardScreen(
-    onSave: (VolunteerCardInput) -> Unit = {}
-) {
+fun AddCardScreen(navController: NavController) {
+    val authViewModel: AuthViewModel = viewModel()
+    val cardViewModel: CardViewModel = viewModel()
+    val context = LocalContext.current
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
@@ -31,6 +39,18 @@ fun AddCardScreen(
 
     val titleError = title.isBlank()
     val descriptionError = description.isBlank()
+
+    val eventDate by remember {
+        derivedStateOf {
+            LocalDateTime.of(
+                year.toIntOrNull() ?: 2026,
+                (month.toIntOrNull() ?: 1).coerceIn(1, 12),
+                (day.toIntOrNull() ?: 1).coerceIn(1, 31),
+                (hour.toIntOrNull() ?: 0).coerceIn(0, 23),
+                0
+            )
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -79,24 +99,35 @@ fun AddCardScreen(
         )
         Spacer(Modifier.height(12.dp))
 
-        Text(text = "Event date & time", style = MaterialTheme.typography.labelLarge, color = Color.White)
+        Text(text = "Event date & time", 
+            style = MaterialTheme.typography.labelLarge, 
+            color = Color.White)
         Spacer(Modifier.height(6.dp))
+        
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
-                value = year, onValueChange = { year = it.filter { c -> c.isDigit() } },
-                label = { Text("Year") }, modifier = Modifier.weight(1f)
+                value = year, 
+                onValueChange = { year = it.filter { c -> c.isDigit() } },
+                label = { Text("Year") }, 
+                modifier = Modifier.weight(1f)
             )
             OutlinedTextField(
-                value = month, onValueChange = { month = it.filter { c -> c.isDigit() } },
-                label = { Text("Month") }, modifier = Modifier.weight(1f)
+                value = month, 
+                onValueChange = { month = it.filter { c -> c.isDigit() } },
+                label = { Text("Month") }, 
+                modifier = Modifier.weight(1f)
             )
             OutlinedTextField(
-                value = day, onValueChange = { day = it.filter { c -> c.isDigit() } },
-                label = { Text("Day") }, modifier = Modifier.weight(1f)
+                value = day, 
+                onValueChange = { day = it.filter { c -> c.isDigit() } },
+                label = { Text("Day") }, 
+                modifier = Modifier.weight(1f)
             )
             OutlinedTextField(
-                value = hour, onValueChange = { hour = it.filter { c -> c.isDigit() } },
-                label = { Text("Hour") }, modifier = Modifier.weight(1f)
+                value = hour, 
+                onValueChange = { hour = it.filter { c -> c.isDigit() } },
+                label = { Text("Hour") }, 
+                modifier = Modifier.weight(1f)
             )
         }
 
@@ -104,21 +135,22 @@ fun AddCardScreen(
 
         Button(
             onClick = {
-                val eventDate = LocalDateTime.of(
-                    year.toIntOrNull() ?: 2026,
-                    month.toIntOrNull() ?: 1,
-                    day.toIntOrNull() ?: 1,
-                    hour.toIntOrNull() ?: 0,
-                    0
+                val cardInput = VolunteerCardInput(
+                    title = title,
+                    description = description,
+                    location = location,
+                    eventDate = eventDate,
+                    goal = goalText.toIntOrNull() ?: 0
                 )
-                onSave(
-                    VolunteerCardInput(
-                        title = title,
-                        description = description,
-                        location = location,
-                        eventDate = eventDate,
-                        goal = goalText.toIntOrNull() ?: 0
-                    )
+                cardViewModel.saveCard(
+                    card = cardInput,
+                    userId = authViewModel.currentUserId,
+                    context = context,
+                    onSuccess = {
+                        navController.navigate(ROUTE_DASHBOARD) {
+                            popUpTo(ROUTE_DASHBOARD) { inclusive = true }
+                        }
+                    }
                 )
             },
             enabled = !titleError && !descriptionError,
@@ -129,19 +161,12 @@ fun AddCardScreen(
 
         Spacer(Modifier.height(28.dp))
 
-        val previewDate = LocalDateTime.of(
-            year.toIntOrNull() ?: 2026,
-            (month.toIntOrNull() ?: 1).coerceIn(1, 12),
-            (day.toIntOrNull() ?: 1).coerceIn(1, 28),
-            (hour.toIntOrNull() ?: 0).coerceIn(0, 23),
-            0
-        )
         VolunteerEventCardItem(
             card = VolunteerEventCard(
                 title = title.ifBlank { "Untitled event" },
                 description = description.ifBlank { "Add a description for your event." },
                 location = location.ifBlank { "Location TBD" },
-                eventDateEpochSeconds = previewDate.atZone(java.time.ZoneId.systemDefault()).toEpochSecond(),
+                eventDateEpochSeconds = eventDate.atZone(ZoneId.systemDefault()).toEpochSecond(),
                 goal = goalText.toIntOrNull() ?: 0,
                 raised = 0
             ),
@@ -153,7 +178,5 @@ fun AddCardScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AddCardScreenPreview() {
-    AddCardScreen(
-        onSave = {}
-    )
+    AddCardScreen(navController = rememberNavController())
 }
